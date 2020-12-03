@@ -1,6 +1,7 @@
 
 
 .container {
+
     border: 0.5px solid gray;
     margin: 100px;
     box-shadow: 5px 10px 18px gray;
@@ -17,11 +18,11 @@
     flex-wrap: nowrap;
     flex-direction: row;
 }
-.grow1 {
+.--growOne {
     flex-grow: 1;
 }
-.grow2 {
-    flex-grow: 2;
+.--growTwo {
+    flex-grow: 3;
 }
 .close {
     padding: 20px;
@@ -38,4 +39,5 @@ ul.breadcrumb li+li:before {
     padding: 8px;
     color: black;
     content: "/\00a0";
+
 }
