@@ -22,7 +22,7 @@ export default TextField;
 
 TextField.propTypes = {
   value: PropTypes.string,
-  disabled: PropTypes.string,
+  disabled: PropTypes.bool,
   error: PropTypes.string,
 };
 
