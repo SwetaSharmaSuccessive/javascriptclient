@@ -28,6 +28,6 @@ TextField.propTypes = {
 
 TextField.defaultProps = {
   value: '',
-  disabled: '',
+  disabled: false,
   error: '',
 };
