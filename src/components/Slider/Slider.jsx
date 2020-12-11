@@ -31,7 +31,7 @@ componentWillUnmount = () => {
 render() {
   const { current } = this.state;
   const {
-    altText, height, duration, banner,
+    altText, height, banner,
   } = this.props;
 
   const { defaultbanner } = this.props;
@@ -40,7 +40,7 @@ render() {
   return (
     <>
       <div align="center">
-        <Img src={image} alt={altText} height={height} duration={duration} />
+        <Img src={image} alt={altText} height={height} />
       </div>
     </>
   );
