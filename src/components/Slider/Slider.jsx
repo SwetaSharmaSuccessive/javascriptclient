@@ -5,14 +5,12 @@ import Img from './style';
 import { getRandomNumber, getNextRoundRobin } from '../../libs/utils/math';
 
 class Slider extends React.Component {
-number
-
-constructor(props) {
-  super(props);
-  this.state = {
-    current: -1,
-  };
-}
+  constructor(props) {
+    super(props);
+    this.state = {
+      current: 0,
+    };
+  }
 
 componentDidMount = () => {
   const total = banners.length;
@@ -21,11 +19,7 @@ componentDidMount = () => {
   } = this.props;
   let { current } = this.state;
   this.number = setInterval(() => {
-    if (random) {
-      current = getRandomNumber(total);
-    } else {
-      current = getNextRoundRobin(current, total);
-    }
+    current = random ? getRandomNumber(total) : getNextRoundRobin(current, total);
     this.setState({ current });
   }, duration);
 }
@@ -42,7 +36,7 @@ render() {
 
   const { defaultbanner } = this.props;
 
-  const image = current === -1 || banner.length === 0 ? `${defaultbanner}` : `${PUBLIC_IMAGE_FOLDER}${banner[current]}`;
+  const image = !banner.length ? `${defaultbanner}` : `${PUBLIC_IMAGE_FOLDER}${banner[current]}`;
   return (
     <>
       <div align="center">
