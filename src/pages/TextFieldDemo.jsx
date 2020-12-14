@@ -1,14 +1,14 @@
 import React from 'react';
 
 import { TextField, Slider } from '../components';
-import { banners, DEFAULT_BANNER_IMAGE } from '../config/constants';
+import { banners, defaultBannerImage } from '../config/constants';
 import { Div } from '../components/TextField/style';
 
 const TextFieldDemo = () => (
 
   <Div>
     <div>
-      <Slider altText="No Image" duration="2000" height="200" random banner={banners} defaultbanner={DEFAULT_BANNER_IMAGE} />
+      <Slider altText="No Image" duration="2000" height="200" random banner={banners} defaultbanner={defaultBannerImage} />
     </div>
     <p><b>This is a Disabled Input</b></p>
     <TextField disabled value="disabled input" />

@@ -1,7 +1,3 @@
-export function getRandomNumber(maxNumber) {
-  return Math.floor(Math.random() * maxNumber);
-}
+export const getRandomNumber = (maxNumber) => Math.floor(Math.random() * maxNumber);
 
-export function getNextRoundRobin(total, current) {
-  return Math.floor(current % total);
-}
+export const getNextRoundRobin = (total, current) => Math.floor(current % total);

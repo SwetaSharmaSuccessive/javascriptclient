@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { PUBLIC_IMAGE_FOLDER, banners, DEFAULT_BANNER_IMAGE } from '../../config/constants';
+import { publicImageFolder, banners, defaultBannerImage } from '../../config/constants';
 import Img from './style';
 import { getRandomNumber, getNextRoundRobin } from '../../libs/utils/math';
 
@@ -36,7 +36,7 @@ render() {
 
   const { defaultbanner } = this.props;
 
-  const image = !banner.length ? `${defaultbanner}` : `${PUBLIC_IMAGE_FOLDER}${banner[current]}`;
+  const image = !banner.length ? `${defaultbanner}` : `${publicImageFolder}${banner[current]}`;
   return (
     <>
       <div align="center">
@@ -59,7 +59,7 @@ Slider.propTypes = {
 Slider.defaultProps = {
   altText: 'DefaultBanner',
   banner: [],
-  defaultbanner: DEFAULT_BANNER_IMAGE,
+  defaultbanner: defaultBannerImage,
   duration: 2000,
   height: 200,
   random: false,
