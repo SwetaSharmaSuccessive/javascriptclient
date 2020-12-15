@@ -35,7 +35,7 @@ render() {
   } = this.props;
 
   const { defaultbanner } = this.props;
-  console.log(defaultbanner);
+
   const image = !banner.length ? `${publicImageFolder}${defaultbanner}` : `${publicImageFolder}${banner[current]}`;
   return (
     <>
