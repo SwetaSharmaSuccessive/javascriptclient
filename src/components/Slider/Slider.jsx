@@ -35,8 +35,8 @@ render() {
   } = this.props;
 
   const { defaultbanner } = this.props;
-
-  const image = !banner.length ? `${defaultbanner}` : `${publicImageFolder}${banner[current]}`;
+  console.log(defaultbanner);
+  const image = !banner.length ? `${publicImageFolder}${defaultbanner}` : `${publicImageFolder}${banner[current]}`;
   return (
     <>
       <div align="center">
