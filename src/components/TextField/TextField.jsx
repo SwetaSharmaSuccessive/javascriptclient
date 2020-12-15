@@ -5,29 +5,26 @@ import PropTypes from 'prop-types';
 import { Error, Input } from './style';
 
 const TextField = (props) => {
-  const { value, disabled, error } = props;
-  if (error) {
-    return (
-      <>
-        <Input type="text" value={value} error />
-        <Error>{error}</Error>
-      </>
-    );
-  }
+  const {
+    disabled, error, onChange,
+  } = props;
+
   return (
-    <Input type="text" value={value} disabled={disabled} />
+    <>
+      <Input type="text" onChange={onChange} defaultValue="" disabled={disabled} />
+      <Error>{error}</Error>
+    </>
   );
 };
-export default TextField;
 
 TextField.propTypes = {
-  value: PropTypes.string,
   disabled: PropTypes.bool,
   error: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
 };
 
 TextField.defaultProps = {
-  value: '',
   disabled: false,
   error: '',
 };
+export default TextField;

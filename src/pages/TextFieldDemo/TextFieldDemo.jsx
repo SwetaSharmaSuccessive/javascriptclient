@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { TextField, Slider } from '../components';
-import { banners, defaultBannerImage } from '../config/constants';
-import { Div } from '../components/TextField/style';
+import { TextField, Slider } from '../../components';
+import { banners, defaultBannerImage } from '../../config/constants';
+import { Div } from '../../components/TextField/style';
 
 const TextFieldDemo = () => (
 
