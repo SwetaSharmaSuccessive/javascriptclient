@@ -63,7 +63,7 @@ class InputDemo extends React.Component {
           />
 
           <Text>
-            <p>Select the game you play?</p>
+            <p>Select the game you play</p>
           </Text>
           <SelectField
             defaultOptions="Select"
