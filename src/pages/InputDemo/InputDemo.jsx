@@ -1,9 +1,7 @@
 /* eslint-disable no-console */
 import React from 'react';
-import { TextField } from '../../components';
+import { TextField, RadioGroup, SelectField } from '../../components';
 import { Text } from '../../components/TextField/style';
-import SelectField from '../../components/SelectField';
-import RadioGroup from '../../components/RadioGroup/index';
 import { selectOptions, radioOptionsCricket, radioOptionsFootball } from '../../config/constants';
 
 class InputDemo extends React.Component {
@@ -15,44 +13,38 @@ class InputDemo extends React.Component {
       cricket: '',
       football: '',
     };
-    console.log(this.state);
   }
 
   handleNameChange = (e) => {
-    this.setState({ name: e.target.value }, () => {
-      console.log(this.state);
-    });
+    this.setState({ name: e.target.value });
   }
 
   handleSportChange = (e) => {
-    this.setState({ sport: e.target.value }, () => console.log(this.state));
-
-    if (e.target.value === 'Select') {
-      this.setState({ sport: '' });
+    if (e.target.value !== 'Select') {
+      this.setState({ sport: e.target.value, football: '', cricket: '' });
+    } else {
+      this.setState({ sport: '', football: '', cricket: '' });
     }
-    return e.target.value === 'cricket' ? this.setState({ football: '' }) : this.setState({ cricket: '' });
   }
 
   handlePositionChange = (e) => {
     const { sport } = this.state;
 
-    return sport === 'cricket' ? this.setState({ cricket: e.target.value }, () => console.log(this.state)) : this.setState({ football: e.target.value }, () => console.log(this.state));
+    this.setState({ [sport]: e.target.value });
   }
 
   RadioOption = () => {
-    let { radioValue } = this.state;
+    const radioOptions = {
+      cricket: radioOptionsCricket,
+      football: radioOptionsFootball,
+    };
     const { sport } = this.state;
-    if (sport === 'cricket') {
-      radioValue = radioOptionsCricket;
-    } else if (sport === 'football') {
-      radioValue = radioOptionsFootball;
-    }
-    return (radioValue);
+    return radioOptions[sport];
   };
 
   render() {
     const { sport } = this.state;
-
+    console.log(this.state);
     return (
       <>
         <div>
@@ -72,7 +64,7 @@ class InputDemo extends React.Component {
           />
           <div>
             {
-              (sport === '' || sport === 'Select') ? '' : (
+              (sport) && (
                 <>
                   <p><b>What you do?</b></p>
                   <RadioGroup
