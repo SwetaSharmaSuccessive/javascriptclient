@@ -14,7 +14,7 @@ const SelectField = (props) => {
         {defaultOptions && <option>{defaultOptions}</option>}
 
         {
-          options && options.length && options.map(({ value, label }) => (
+          options.map(({ value, label }) => (
             <option key={label} value={value}>{label}</option>
           ))
         }

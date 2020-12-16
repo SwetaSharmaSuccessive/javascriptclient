@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Typography } from '@material-ui/core';
 import { Math } from '../../components/Math';
 
 class ChildrenDemo extends Component {
@@ -11,31 +10,23 @@ class ChildrenDemo extends Component {
   render() {
     return (
       <>
-        <Typography>
-          <Math first={7} second={4} operator="+" />
-        </Typography>
-        <Typography>
-          <Math first={6} second={1} operator="-" />
-        </Typography>
-        <Typography>
-          <Math first={50} second={2} operator="*" />
-        </Typography>
-        <Typography>
-          <Math first={44} second={4} operator="/" />
-        </Typography>
-        <Typography>
-          <Math first={7} second={0} operator="/" />
-        </Typography>
-        <Typography>
-          <Math first={3} second={0} operator="^" />
-        </Typography>
-        <Typography>
-          <Math first={10} second={90} operator="+">
-            {(first, second, operator, result) => (
-              <div>{`Sum of ${first} and ${second} is ${result}`}</div>
-            )}
-          </Math>
-        </Typography>
+        <Math first={7} second={4} operator="+" />
+        <br />
+        <Math first={6} second={1} operator="-" />
+        <br />
+        <Math first={50} second={2} operator="*" />
+        <br />
+        <Math first={44} second={4} operator="/" />
+        <br />
+        <Math first={7} second={0} operator="/" />
+        <br />
+        <Math first={3} second={0} operator="^" />
+        <br />
+        <Math first={10} second={90} operator="+">
+          {(first, second, operator, result) => (
+            <div>{`Sum of ${first} and ${second} is ${result}`}</div>
+          )}
+        </Math>
         <br />
         <Math first={13} second={9} operator="-">
           {(first, second, operator, result) => (
@@ -49,13 +40,12 @@ class ChildrenDemo extends Component {
           )}
         </Math>
         <br />
-        <Typography>
-          <Math first={30} second={0} operator="^">
-            {(first, second, operator, result) => (
-              <div>{`${first} ${operator} ${second} is an ${result}.`}</div>
-            )}
-          </Math>
-        </Typography>
+        <Math first={30} second={0} operator="^">
+          {(first, second, operator, result) => (
+            <div>{`${first} ${operator} ${second} is an ${result}.`}</div>
+          )}
+        </Math>
+
         <br />
         <Math first={75} second={0} operator="/">
           {(first, second, operator, result) => (
@@ -63,13 +53,11 @@ class ChildrenDemo extends Component {
           )}
         </Math>
         <br />
-        <Typography>
-          <Math first={555} second={5} operator="/">
-            {(first, second, operator, result) => (
-              <div>{`When we divide ${first} and ${second} we get ${result}`}</div>
-            )}
-          </Math>
-        </Typography>
+        <Math first={555} second={5} operator="/">
+          {(first, second, operator, result) => (
+            <div>{`When we divide ${first} and ${second} we get ${result}`}</div>
+          )}
+        </Math>
       </>
     );
   }
