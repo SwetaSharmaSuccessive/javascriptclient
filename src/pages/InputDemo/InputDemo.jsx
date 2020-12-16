@@ -10,7 +10,7 @@ import { selectOptions, radioOptionsCricket, radioOptionsFootball } from '../../
 
 class InputDemo extends React.Component {
   schema = yup.object().shape({
-    name: yup.string().required('Please Enter your Name').min(3, 'Name must contain atleast 3 character'),
+    name: yup.string().required('Please Enter Your Name').min(3, 'Name must contain atleast 3 character'),
     sport: yup.string().required('Sport is required field '),
     cricket: yup.string().when('sport', {
       is: 'cricket',
@@ -87,7 +87,6 @@ class InputDemo extends React.Component {
   };
 
   hasErrors = () => {
-    console.log('inside Haserr', this.state);
     try {
       this.schema.validateSync(this.state);
     } catch (err) {
