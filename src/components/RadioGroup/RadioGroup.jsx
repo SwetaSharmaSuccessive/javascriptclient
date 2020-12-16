@@ -27,6 +27,7 @@ RadioGroup.propTypes = {
   onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(PropTypes.object),
   onBlur: PropTypes.string.isRequired,
+
 };
 RadioGroup.defaultProps = {
   error: '',

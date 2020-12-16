@@ -3,82 +3,74 @@ import * as yup from 'yup';
 
 import React from 'react';
 import {
-  TextField, SelectField, RadioGroup, ButtonField,
+  TextField, RadioGroup, SelectField, ButtonField,
 } from '../../components';
 import { Text } from '../../components/TextField/style';
-import {
-  selectOptions, radioOptionsCricket, radioOptionsFootball,
-} from '../../config/constants';
+import { selectOptions, radioOptionsCricket, radioOptionsFootball } from '../../config/constants';
 
 class InputDemo extends React.Component {
-   schema = yup.object().shape({
-     name: yup.string().required('Please Enter your Name').min(3, 'Name must contain atleast 3 character'),
-     sport: yup.string().required('Sport is required field '),
-     cricket: yup.string().when('sport', {
-       is: 'cricket',
-       then: yup.string().required('What you do is a required field'),
-     }),
-     football: yup.string().when('sport', {
-       is: 'football',
-       then: yup.string().required('What you do is a required field'),
-     }),
-   });
+  schema = yup.object().shape({
+    name: yup.string().required('Please Enter your Name').min(3, 'Name must contain atleast 3 character'),
+    sport: yup.string().required('Sport is required field '),
+    cricket: yup.string().when('sport', {
+      is: 'cricket',
+      then: yup.string().required('What you do is a required field'),
+    }),
+    football: yup.string().when('sport', {
+      is: 'football',
+      then: yup.string().required('What you do is a required field'),
+    }),
+  });
 
-   constructor(props) {
-     super(props);
-     this.state = {
-       name: '',
-       sport: '',
-       cricket: '',
-       football: '',
-       touched: {
-         name: false,
-         sport: false,
-         cricket: false,
-         football: false,
-       },
-     };
-   }
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: '',
+      sport: '',
+      cricket: '',
+      football: '',
+      touched: {
+        name: false,
+        sport: false,
+        cricket: false,
+        football: false,
+      },
+    };
+  }
 
   handleBlur = (field) => () => {
     const { touched } = this.state;
     touched[field] = true;
-
     this.setState({
       touched,
     }, () => this.getError());
   }
 
   handleNameChange = (e) => {
-    this.setState({ name: e.target.value }, () => {
-      console.log(this.state);
-    });
+    this.setState({ name: e.target.value });
   }
 
   handleSportChange = (e) => {
-    this.setState({ sport: e.target.value }, () => console.log(this.state));
-
-    if (e.target.value === 'Select') {
-      this.setState({ sport: '' });
+    if (e.target.value !== 'Select') {
+      this.setState({ sport: e.target.value, football: '', cricket: '' });
+    } else {
+      this.setState({ sport: '', football: '', cricket: '' });
     }
-    return e.target.value === 'cricket' ? this.setState({ football: '' }) : this.setState({ cricket: '' });
   }
 
   handlePositionChange = (e) => {
     const { sport } = this.state;
 
-    return sport === 'cricket' ? this.setState({ cricket: e.target.value }, () => console.log(this.state)) : this.setState({ football: e.target.value }, () => console.log(this.state));
+    this.setState({ [sport]: e.target.value });
   }
 
   RadioOption = () => {
-    let { radioValue } = this.state;
+    const radioOptions = {
+      cricket: radioOptionsCricket,
+      football: radioOptionsFootball,
+    };
     const { sport } = this.state;
-    if (sport === 'cricket') {
-      radioValue = radioOptionsCricket;
-    } else if (sport === 'football') {
-      radioValue = radioOptionsFootball;
-    }
-    return (radioValue);
+    return radioOptions[sport];
   };
 
   getError = (field) => {
@@ -115,8 +107,7 @@ class InputDemo extends React.Component {
 
   render() {
     const { sport } = this.state;
-    console.log('hasErr', this.hasErrors());
-
+    console.log(this.state);
     return (
       <>
         <div>
@@ -140,7 +131,7 @@ class InputDemo extends React.Component {
           />
           <div>
             {
-              (sport === '' || sport === 'Select') ? '' : (
+              (sport) && (
                 <>
                   <p><b>What you do?</b></p>
                   <RadioGroup
