@@ -3,8 +3,6 @@ export const defaultBannerImage = 'banners/default.png';
 
 export const banners = ['/cloud.jpg', '/dns-server.png', '/full-stack-web-development.jpg', '/js.jpg', '/load-balancer.png'];
 
-export const operatorList = ['+', '-', '*', '/'];
-
 export const selectOptions = [
   {
     label: 'Cricket',

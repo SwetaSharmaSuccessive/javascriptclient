@@ -1,27 +1,42 @@
+import React from 'react';
 import PropTypes from 'prop-types';
-
-import { operatorList } from '../../config/constants';
-
-const calculateResult = (first, second, operator) => {
-  if (operatorList.includes(operator)) {
-    // eslint-disable-next-line no-eval
-    const result = eval(`${first} ${operator} ${second}`);
-    return result;
-  }
-  return 'Invalid Operation';
-};
 
 const Math = (props) => {
   const {
     first, second, operator, children,
   } = props;
-  const result = calculateResult(first, second, operator);
-  return children ? children(first, second, operator, result) : `${first} ${operator} ${second} = ${result}`;
+  let { result } = props;
+  switch (operator) {
+  case '+': result = first + second;
+    break;
+  case '-': result = first - second;
+    break;
+  case '/': result = first / second;
+    break;
+  case '*': result = first * second;
+    break;
+  default:
+    result = 'Invalid Operator';
+    break;
+  }
+  if (children) {
+    return children(first, second, result);
+  }
+
+  return (
+    <>
+      <p />
+    </>
+  );
 };
 Math.propTypes = {
   first: PropTypes.number.isRequired,
   second: PropTypes.number.isRequired,
   operator: PropTypes.string.isRequired,
-  children: PropTypes.func,
+  children: PropTypes.node,
+  result: PropTypes.number.isRequired,
+};
+Math.defaultProps = {
+  children: undefined,
 };
 export default Math;
