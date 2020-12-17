@@ -5,28 +5,21 @@ const Math = (props) => {
   const {
     first, second, operator, children,
   } = props;
-  let { result } = props;
-  switch (operator) {
-  case '+': result = first + second;
-    break;
-  case '-': result = first - second;
-    break;
-  case '/': result = first / second;
-    break;
-  case '*': result = first * second;
-    break;
-  default:
-    result = 'Invalid Operator';
-    break;
-  }
+  const operatorList = ['+', '-', '*', '/'];
+  const calculateResult = () => {
+    if (!operatorList.includes(operator)) {
+      return 'Invalid Operation';
+    }
+    /* eslint-disable no-eval */
+    return eval(`${first} ${operator} ${second}`);
+  };
   if (children) {
-    return children(first, second, result);
+    return children({ first, second, result: calculateResult() });
   }
-
   return (
-    <>
-      <p />
-    </>
+    <p>
+      {`Result of ${first} ${operator} ${second} is ${calculateResult()}`}
+    </p>
   );
 };
 Math.propTypes = {
@@ -34,7 +27,6 @@ Math.propTypes = {
   second: PropTypes.number.isRequired,
   operator: PropTypes.string.isRequired,
   children: PropTypes.node,
-  result: PropTypes.number.isRequired,
 };
 Math.defaultProps = {
   children: undefined,
