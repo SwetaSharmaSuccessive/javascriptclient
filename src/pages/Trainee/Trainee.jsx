@@ -1,21 +1,31 @@
-import { Button } from '@material-ui/core';
-import React from 'react';
-import AddDialog from './components/AddDialog/AddDialog';
+import React, { useState } from 'react';
+import Button from '@material-ui/core/Button';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import { Grid } from '@material-ui/core';
+import { AddDialog } from './components';
 
-class Trainee extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { isOpen: false };
-  }
+const FormDialog = () => {
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  return (
+    <div>
+      <Grid container justify="left">
+        <Button variant="outlined" color="primary" startIcon={<PersonAddIcon />} onClick={handleClickOpen}>
+          Add Trainee
+        </Button>
 
-  render() {
-    const { isOpen } = this.state;
-    return (
-      <>
-        <Button variant="outlined" color="primary" href="#outlined-buttons" onClick={() => this.setState({ isOpen: true })}>Add Trainee</Button>
-        <AddDialog open={isOpen} />
-      </>
-    );
-  }
-}
-export default Trainee;
+      </Grid>
+      <AddDialog
+        open={open}
+        onClose={handleClose}
+        onSubmit={handleClose}
+      />
+    </div>
+  );
+};
+export default FormDialog;

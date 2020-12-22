@@ -1,149 +1,172 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { bool, func } from 'prop-types';
+import Button from '@material-ui/core/Button';
 import {
-  Button, Dialog, DialogTitle, DialogContent, DialogContentText,
+  Dialog, DialogActions, Grid, TextField, DialogContent,
+  DialogContentText, DialogTitle, InputAdornment,
 } from '@material-ui/core';
-import { Email, VisibilityOff, Person } from '@material-ui/icons';
-import { withStyles } from '@material-ui/core/styles';
-import schema from './DialogSchema';
-import DialogField from './DialogField';
 
-const stylePassword = () => ({
-  passwordField: {
-    display: 'flex',
-    flexdirection: 'row',
-  },
-  passwordItem: {
-    flex: 1,
-  },
-});
+import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
 
-const constant = {
-  Name: Person,
-  Email,
-  Password: VisibilityOff,
-  'Confirm Password': VisibilityOff,
-};
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 
-class AddDialog extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      Name: '',
-      Email: '',
-      Password: '',
-      ConfirmPassword: '',
-      touched: {
-        name: false,
-        email: false,
-        password: false,
-        confirmPassword: false,
-      },
-    };
-  }
+import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 
-  handleChange = (key) => ({ target: { value } }) => {
-    this.setState({ [key]: value });
+import * as yup from 'yup';
+
+const AddDialog = (props) => {
+  const { open, onClose, onSubmit } = props;
+  const [state, setState] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
+  const handleChange = (field) => (event) => {
+    setState({ ...state, [field]: event.target.value });
   };
-
-    hasErrors = () => {
+  const handleBlur = (field) => {
+    setTouched({ ...touched, [field]: true });
+  };
+  const schema = yup.object().shape({
+    name: yup.string().required('Name is a required field').min(3, 'Min 3 characters'),
+    email: yup.string().email('Enter valid email')
+      .required('Email is a required field'),
+    password: yup.string()
+      .required('Password is a required field')
+      .matches(
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/g,
+        'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character',
+      ),
+    confirmPassword: yup.string()
+      .oneOf([yup.ref('password'), null], 'Passwords must match')
+      .required('Confirm Password is a required field'),
+  });
+  const hasErrors = () => {
+    try {
+      schema.validateSync(state);
+    } catch (err) {
+      return true;
+    }
+    return false;
+  };
+  const isTouched = () => {
+    const {
+      name, email, password, confirmPassword,
+    } = touched;
+    if (name || email || password || confirmPassword) {
+      return true;
+    }
+    return false;
+  };
+  const getError = (field) => {
+    if (touched[field] && hasErrors()) {
       try {
-        schema.validateSync(this.state);
+        schema.validateSyncAt(field, state);
       } catch (err) {
-        return true;
+        return err.message;
       }
-      return false;
     }
-
-    getError = (field) => {
-      const { touched } = this.state;
-      if (touched[field] && this.hasErrors()) {
-        try {
-          schema.validateSyncAt(field, this.state);
-          return '';
-        } catch (err) {
-          return err.message;
-        }
-      }
-      return '';
-    };
-
-    isTouched = (field) => {
-      const { touched } = this.state;
-      this.setState({
-        touched: {
-          ...touched,
-          [field]: true,
-        },
-      });
-    }
-
-    passwordType = (key) => {
-      if (key === 'Password' || key === 'Confirm Password') {
-        return 'password';
-      }
-      return '';
-    }
-
-    render() {
-      const {
-        open, onClose, onSubmit, classes,
-      } = this.props;
-      const { name, email, password } = this.state;
-      const textBox = [];
-      Object.keys(constant).forEach((key) => {
-        textBox.push(<DialogField
-          label={key}
-          onChange={this.handleChange(key)}
-          onBlur={() => this.isTouched(key)}
-          helperText={this.getError(key)}
-          error={!!this.getError(key)}
-          icons={constant[key]}
-          type={this.passwordType(key)}
-        />);
-      });
-
-      return (
-        <>
-          <Dialog open={open} onClose={onClose}>
-            <DialogTitle id="form-dialog-title">Add Trainee</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Enter your trainee details
-              </DialogContentText>
-              <div>
-                {textBox[0]}
-              </div>
-              &nbsp;
-              <div>
-                {textBox[1]}
-              </div>
-              &nbsp;
-              <div className={classes.passwordField}>
-                <div className={classes.passwordItem}>
-                  {textBox[2]}
-                </div>
-                &nbsp;
-                &nbsp;
-                <div className={classes.passwordItem}>
-                  {textBox[3]}
-                </div>
-              </div>
-          &nbsp;
-              <div align="right">
-                <Button onClick={onClose} color="primary">CANCEL</Button>
-                <Button variant="contained" color="primary" disabled={this.hasErrors()} onClick={() => onSubmit()({ name, email, password })}>SUBMIT</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </>
-      );
-    }
-}
-export default withStyles(stylePassword)(AddDialog);
-AddDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  classes: PropTypes.objectOf(PropTypes.string).isRequired,
+    return null;
+  };
+  const renderFormField = ({
+    label, type, icon, field,
+  }) => (
+    <TextField
+      error={!!getError(field)}
+      variant="outlined"
+      margin="dense"
+      label={label}
+      type={type}
+      fullWidth
+      helperText={getError(field)}
+      onChange={handleChange(field)}
+      onBlur={() => handleBlur(field)}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            {icon}
+          </InputAdornment>
+        ),
+      }}
+    />
+  );
+  return (
+    <div>
+      <Dialog open={open} fullWidth maxWidth="md" onClose={onClose}>
+        <DialogTitle id="form-dialog-title">Add Trainee</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Enter your Trainee details.
+          </DialogContentText>
+          <div>
+            <Grid container fullWidth>
+              <Grid item md={12} fullWidth>
+                {
+                  renderFormField({
+                    label: 'Name',
+                    field: 'name',
+                    type: 'text',
+                    icon: <PersonOutlineIcon />,
+                  })
+                }
+              </Grid>
+              <Grid item md={12} fullWidth>
+                {
+                  renderFormField({
+                    label: 'Email',
+                    field: 'email',
+                    type: 'Email',
+                    icon: <EmailOutlinedIcon />,
+                  })
+                }
+              </Grid>
+              <Grid item md={5.5}>
+                {
+                  renderFormField({
+                    label: 'Password',
+                    field: 'password',
+                    type: 'password',
+                    icon: <VisibilityOffOutlinedIcon />,
+                  })
+                }
+              </Grid>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <Grid item md={5}>
+                {
+                  renderFormField({
+                    label: 'Confirm Password',
+                    field: 'confirmPassword',
+                    type: 'password',
+                    icon: <VisibilityOffOutlinedIcon />,
+                  })
+                }
+              </Grid>
+            </Grid>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="primary">
+            Cancel
+          </Button>
+          <Button disabled={(hasErrors()) || !isTouched()} onClick={onSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
 };
+
+AddDialog.propTypes = {
+  open: bool.isRequired,
+  onClose: func.isRequired,
+  onSubmit: func.isRequired,
+};
+export default AddDialog;
