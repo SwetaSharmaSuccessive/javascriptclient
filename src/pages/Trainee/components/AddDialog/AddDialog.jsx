@@ -127,7 +127,7 @@ const AddDialog = (props) => {
                   })
                 }
               </Grid>
-              <Grid item md={5.5}>
+              <Grid item sm={6}>
                 {
                   renderFormField({
                     label: 'Password',
@@ -138,7 +138,7 @@ const AddDialog = (props) => {
                 }
               </Grid>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <Grid item md={5}>
+              <Grid item sm={5}>
                 {
                   renderFormField({
                     label: 'Confirm Password',
