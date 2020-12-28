@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { Grid } from '@material-ui/core';
 import { AddDialog } from './components';
-import { NavBar } from '../components';
+import { NavBar } from '../../layouts/components/NavBar';
 
 const FormDialog = () => {
   const [open, setOpen] = useState(false);
