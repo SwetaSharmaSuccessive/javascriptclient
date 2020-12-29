@@ -1,34 +1,19 @@
-import React, { useState } from 'react';
-import Button from '@material-ui/core/Button';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import { Grid } from '@material-ui/core';
-import { AddDialog } from './components';
-import { NavBar } from '../../layouts/components/NavBar';
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import TraineeList from './TraineeList';
+import TraineeDetail from './TraineeDetail';
 
-const FormDialog = () => {
-  const [open, setOpen] = useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
+function Trainee(props) {
+  const { match: { path } } = props;
   return (
-    <div>
-      <NavBar />
-        &nbsp;&nbsp;&nbsp;
-      <Grid container justify="left">
-        <Button variant="outlined" color="primary" startIcon={<PersonAddIcon />} onClick={handleClickOpen}>
-          Add Trainee
-        </Button>
-
-      </Grid>
-      <AddDialog
-        open={open}
-        onClose={handleClose}
-        onSubmit={handleClose}
-      />
-    </div>
+    <Switch>
+      <Route exact path={path} component={TraineeList} />
+      <Route exact path={`${path}/:traineeId`} component={TraineeDetail} />
+    </Switch>
   );
+}
+Trainee.propTypes = {
+  match: PropTypes.objectOf(PropTypes.object).isRequired,
 };
-export default FormDialog;
+export default Trainee;
