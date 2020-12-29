@@ -1,7 +1,7 @@
 import React from 'react';
 import { CssBaseline } from '@material-ui/core';
 import {
-  BrowserRouter as Router, Route, Switch,
+  BrowserRouter as Router, Route, Switch, Redirect,
 } from 'react-router-dom';
 
 import {
@@ -17,12 +17,13 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/">
-            <PrivateRoute component={Trainee} />
+            <Redirect to="/trainee" />
           </Route>
           <AuthRoute path="/login" component={Login} />
           <PrivateRoute path="/text-field" component={TextFieldDemo} />
           <PrivateRoute path="/inputDemo" component={InputDemo} />
           <PrivateRoute path="/childrenDemo" component={ChildrenDemo} />
+          <PrivateRoute path="/trainee" component={Trainee} />
           <PrivateRoute component={NoMatch} />
         </Switch>
       </Router>
