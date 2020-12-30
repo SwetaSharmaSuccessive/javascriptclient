@@ -24,7 +24,7 @@ function App() {
           <PrivateRoute path="/inputDemo" component={InputDemo} />
           <PrivateRoute path="/childrenDemo" component={ChildrenDemo} />
           <PrivateRoute path="/trainee" component={Trainee} />
-          <PrivateRoute component={NoMatch} />
+          <AuthRoute component={NoMatch} />
         </Switch>
       </Router>
     </>
