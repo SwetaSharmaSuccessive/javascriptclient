@@ -1,14 +1,32 @@
 import React from 'react';
 import { CssBaseline } from '@material-ui/core';
-// import { Login } from './pages/Login';
-import { Trainee } from './pages/Trainee';
+import {
+  BrowserRouter as Router, Route, Switch, Redirect,
+} from 'react-router-dom';
+
+import {
+  Trainee, Login, NoMatch, ChildrenDemo, InputDemo, TextFieldDemo,
+} from './pages/index';
+
+import { AuthRoute, PrivateRoute } from './routes/index';
 
 function App() {
   return (
     <>
       <CssBaseline />
-      <Trainee />
-      {/* <Login /> */}
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <Redirect to="/trainee" />
+          </Route>
+          <AuthRoute path="/login" component={Login} />
+          <PrivateRoute path="/text-field" component={TextFieldDemo} />
+          <PrivateRoute path="/inputDemo" component={InputDemo} />
+          <PrivateRoute path="/childrenDemo" component={ChildrenDemo} />
+          <PrivateRoute path="/trainee" component={Trainee} />
+          <AuthRoute component={NoMatch} />
+        </Switch>
+      </Router>
     </>
   );
 }
