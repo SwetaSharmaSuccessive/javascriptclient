@@ -1,7 +1,6 @@
 /* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import { AddDialog } from './components/AddDialog';
@@ -61,7 +60,7 @@ class TraineeList extends React.Component {
 
   render() {
     const { open, order, orderBy } = this.state;
-    const { match: { url }, classes } = this.props;
+    const { classes } = this.props;
     return (
       <>
         <div className={classes.root}>
@@ -100,22 +99,12 @@ class TraineeList extends React.Component {
             onSort={this.handleSort}
             onSelect={this.handleSelect}
           />
-          <ul>
-            {trainees.map(({ name, id }) => (
-              <li key={id}>
-                <Link to={`${url}/${id}`}>
-                  {name}
-                </Link>
-              </li>
-            ))}
-          </ul>
         </div>
       </>
     );
   }
 }
 TraineeList.propTypes = {
-  match: PropTypes.objectOf(PropTypes.object).isRequired,
   classes: PropTypes.objectOf(PropTypes.string).isRequired,
 };
 export default withStyles(useStyles)(TraineeList);
