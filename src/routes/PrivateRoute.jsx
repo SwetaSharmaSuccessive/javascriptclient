@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Route } from 'react-router-dom';
@@ -16,7 +16,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 );
 
 PrivateRoute.propTypes = {
-  component: PropTypes.objectOf(PropTypes.object).isRequired,
+  component: PropTypes.func.isRequired,
 };
 
 export default PrivateRoute;
