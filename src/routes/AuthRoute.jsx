@@ -16,8 +16,7 @@ const AuthRoute = ({ component: Component, ...rest }) => (
 );
 
 AuthRoute.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  component: PropTypes.object.isRequired,
+  component: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
 export default AuthRoute;
