@@ -38,6 +38,10 @@ class TraineeList extends React.Component {
     };
   }
 
+  handleUser = (status, data) => {
+    this.setState({ Open: status }, () => { console.log(data); });
+  };
+
   handleClose = () => {
     this.setState({ Open: false });
   }

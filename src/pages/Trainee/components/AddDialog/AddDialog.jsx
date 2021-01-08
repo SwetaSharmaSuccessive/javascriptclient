@@ -13,6 +13,7 @@ import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 
 import * as yup from 'yup';
+import { MyContext } from '../../../../contexts';
 
 const AddDialog = (props) => {
   const { open, onClose, onSubmit } = props;
@@ -137,8 +138,7 @@ const AddDialog = (props) => {
                   })
                 }
               </Grid>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <Grid item sm={5}>
+              <Grid item sm={6}>
                 {
                   renderFormField({
                     label: 'Confirm Password',
@@ -155,9 +155,21 @@ const AddDialog = (props) => {
           <Button onClick={onClose} color="primary">
             Cancel
           </Button>
-          <Button disabled={(hasErrors()) || !isTouched()} onClick={onSubmit} color="primary">
-            Submit
-          </Button>
+          <MyContext.Consumer>
+            {({ openSnackBar }) => (
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={() => {
+                  onSubmit({});
+                  openSnackBar('This is a successfully added trainee message ! ', 'success');
+                }}
+                disabled={(hasErrors()) || !isTouched()}
+              >
+                Submit
+              </Button>
+            )}
+          </MyContext.Consumer>
         </DialogActions>
       </Dialog>
     </div>
