@@ -23,5 +23,4 @@ const callApi = async (data, method, url) => {
     return { status: 'error', message: 'This is a error message' };
   }
 };
-
 export default callApi;
