@@ -1,11 +1,17 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
   TextField, Button, InputAdornment,
   CardContent, Typography, Card, Avatar, CssBaseline, withStyles,
 } from '@material-ui/core';
+import { Redirect } from 'react-router-dom';
 import { Email, VisibilityOff, LockOutlined } from '@material-ui/icons';
 import * as yup from 'yup';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ls from 'local-storage';
+import callApi from '../../libs/utils/api';
+import { MyContext } from '../../contexts/index';
 
 const LoginStyle = (theme) => ({
   main: {
@@ -41,6 +47,14 @@ class Login extends React.Component {
     };
   }
 
+  renderRedirect = () => {
+    const { redirect } = this.state;
+    if (redirect) {
+      return <Redirect to="/trainee" />;
+    }
+    return null;
+  }
+
   handleChange = (key) => ({ target: { value } }) => {
     this.setState({ [key]: value });
   };
@@ -52,6 +66,34 @@ class Login extends React.Component {
       return true;
     }
     return false;
+  }
+
+  onClickHandler = async (data, openSnackBar) => {
+    this.setState({
+      loading: true,
+      hasErrors: true,
+    });
+    const res = await callApi(data, 'post', '/login');
+    console.log('resp', res);
+    this.setState({ loading: false });
+    const responseData = ls.get('token');
+    console.log('resatapD', responseData);
+    if (responseData && responseData.status === 200) {
+      this.setState({
+        redirect: true,
+        hasErrors: false,
+        message: 'Login successfully',
+      });
+      const { message } = this.state;
+      openSnackBar(message, 'success');
+    } else {
+      this.setState({
+        message: 'Email or Password is incorrect',
+      }, () => {
+        const { message } = this.state;
+        openSnackBar(message, 'error');
+      });
+    }
   }
 
   getError = (field) => {
@@ -79,6 +121,9 @@ class Login extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const {
+      email, password, loading,
+    } = this.state;
     return (
       <>
         <div className={classes.main}>
@@ -134,7 +179,27 @@ class Login extends React.Component {
                 </div>
                 &nbsp;&nbsp;
                 <div>
-                  <Button variant="contained" color="primary" disabled={this.hasErrors()} fullWidth>SIGN IN</Button>
+                  <MyContext.Consumer>
+                    {({ openSnackBar }) => (
+
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                          this.onClickHandler({ email, password }, openSnackBar);
+                        }}
+                        disabled={loading || this.hasErrors()}
+                        fullWidth
+                      >
+                        {loading && (
+                          <CircularProgress />
+                        )}
+                        {loading && <span>Signing in</span>}
+                        {!loading && <span>Sign in</span>}
+                        {this.renderRedirect()}
+                      </Button>
+                    )}
+                  </MyContext.Consumer>
                 </div>
               </form>
             </CardContent>
