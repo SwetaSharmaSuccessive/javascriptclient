@@ -5,7 +5,6 @@ import { Toolbar } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import ls from 'local-storage';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -34,7 +33,7 @@ export default function NavBar() {
           <Button component={Link} to="/inputDemo" color="inherit">INPUT DEMO</Button>
           <Button component={Link} to="/childrenDemo" color="inherit">CHILDREN DEMO</Button>
           &nbsp;&nbsp;
-          <Button href="/login" color="inherit" style={{ marginLeft: 30 }} onClick={() => { ls.clear('token'); }}>LOGOUT</Button>
+          <Button href="/login" color="inherit" style={{ marginLeft: 30 }} onClick={() => { localStorage.clear('token'); }}>LOGOUT</Button>
         </Toolbar>
       </AppBar>
     </div>

@@ -1,7 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-console */
 import axios from 'axios';
-import ls from 'local-storage';
 
 const callApi = async (data, method, url) => {
   try {
@@ -11,8 +10,9 @@ const callApi = async (data, method, url) => {
       url: baseUrl,
       data,
     });
-    ls.set('token', response.data);
-    const token = ls.get('token');
+    console.log(response);
+    localStorage.setItem('token', response.data.data.generated_token);
+    const token = localStorage.getItem('token');
     console.log('Token:::::', token);
   } catch (error) {
     console.log('Inside catch', error);

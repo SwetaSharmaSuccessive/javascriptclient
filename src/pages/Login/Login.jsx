@@ -9,7 +9,7 @@ import { Redirect } from 'react-router-dom';
 import { Email, VisibilityOff, LockOutlined } from '@material-ui/icons';
 import * as yup from 'yup';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ls from 'local-storage';
+// import ls from 'local-storage';
 import callApi from '../../libs/utils/api';
 import { MyContext } from '../../contexts/index';
 
@@ -76,9 +76,9 @@ class Login extends React.Component {
     const res = await callApi(data, 'post', '/login');
     console.log('resp', res);
     this.setState({ loading: false });
-    const responseData = ls.get('token');
+    const responseData = localStorage.getItem('token');
     console.log('resatapD', responseData);
-    if (responseData && responseData.status === 200) {
+    if (responseData) {
       this.setState({
         redirect: true,
         hasErrors: false,
