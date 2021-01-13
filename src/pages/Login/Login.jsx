@@ -40,6 +40,9 @@ class Login extends React.Component {
     this.state = {
       email: '',
       password: '',
+      loading: false,
+      redirect: false,
+      hasError: true,
       touched: {
         Email: false,
         Password: false,
@@ -73,22 +76,24 @@ class Login extends React.Component {
       loading: true,
       hasErrors: true,
     });
-    const res = await callApi(data, 'post', '/login');
-    console.log('resp', res);
+    const response= await callApi(data, 'post', '/user/login');
+    console.log('login data', data);
+    console.log('ResponseToken', response);
+    localStorage.setItem('token', response.data.data.generated_token);
     this.setState({ loading: false });
-    const responseData = localStorage.getItem('token');
-    console.log('resatapD', responseData);
-    if (responseData) {
+    const Token = localStorage.getItem('token');
+    if (Token !== 'undefined') {
       this.setState({
         redirect: true,
-        hasErrors: false,
-        message: 'Login successfully',
+        hasError: false,
+        message: 'Successfully Login!',
+      }, () => {
+        const { message } = this.state;
+        openSnackBar(message, 'success');
       });
-      const { message } = this.state;
-      openSnackBar(message, 'success');
     } else {
       this.setState({
-        message: 'Email or Password is incorrect',
+        message: 'Login Failed, Record Not Found',
       }, () => {
         const { message } = this.state;
         openSnackBar(message, 'error');

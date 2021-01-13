@@ -6,6 +6,7 @@ import {
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Button from '@material-ui/core/Button';
 import TablePagination from '@material-ui/core/TablePagination';
+import { hoc } from '../HOC/index';
 
 const useStyles = (theme) => ({
   tableContainer: {
@@ -114,4 +115,4 @@ TableComponent.defaultProps = {
   order: 'asc',
   orderBy: '',
 };
-export default withStyles(useStyles)(TableComponent);
+export default withStyles(useStyles)(hoc(TableComponent));

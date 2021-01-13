@@ -1,14 +1,16 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-console */
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { AddDialog, EditDialog, DeleteDialog } from './components/index';
 import { TableComponent } from '../../components/Table';
+import { AddDialog, EditDialog, DeleteDialog } from './components/index';
 import { getDateFormatted } from '../../libs/utils/getDateFormatted';
-import trainees from './data/trainee';
+import callApi from '../../libs/utils/api';
+import { MyContext } from '../../contexts/index';
 
 const useStyles = (theme) => ({
   traineeButton: {
@@ -21,7 +23,9 @@ const useStyles = (theme) => ({
   },
 });
 
-class TraineeList extends React.Component {
+let trainee = [];
+
+class TraineeList extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -32,9 +36,13 @@ class TraineeList extends React.Component {
       orderBy: '',
       order: '',
       page: 0,
+      dataObj: [],
       rowsPerPage: 10,
       editData: {},
       deleteData: {},
+      count: 0,
+      limit: 20,
+      skip: 0,
     };
   }
 
@@ -80,9 +88,41 @@ class TraineeList extends React.Component {
     });
   };
 
+  componentDidMount = () => {
+    const { skip, limit } = this.state;
+    this.setState({ loading: true });
+    const value = this.context;
+    callApi({}, 'get', `/trainee?skip=${skip}&limit=${limit}`).then((response) => {
+      trainee = response.data.data;
+      this.setState({ dataObj: response.data });
+      if (response.data === undefined) {
+        this.setState({
+          loading: false,
+          message: 'This is an error while displaying Trainee',
+        }, () => {
+          const { message } = this.state;
+          value.openSnackBar(message, 'error');
+        });
+      } else {
+        const { records } = response.data;
+        this.setState({ dataObj: records, loading: false, Count: 100 });
+        return response;
+      }
+    });
+  }
+
+  handleChangeRowsPerPage = (event) => {
+    this.setState({
+      rowsPerPage: event.target.value,
+      page: 0,
+
+    });
+  };
+
   render() {
     const {
-      EditOpen, Open, order, orderBy, page, rowsPerPage, editData, DeleteOpen, deleteData,
+      EditOpen, Open, order, orderBy, page,
+      rowsPerPage, editData, DeleteOpen, deleteData, Count,
     } = this.state;
     const { classes } = this.props;
     return (
@@ -111,7 +151,7 @@ class TraineeList extends React.Component {
         />
         <TableComponent
           id="id"
-          data={trainees}
+          data={trainee}
           columns={[
             {
               field: 'name',
@@ -143,15 +183,17 @@ class TraineeList extends React.Component {
           order={order}
           onSort={this.handleSort}
           onSelect={this.handleSelect}
-          count={100}
+          count={Count}
           page={page}
           rowsPerPage={rowsPerPage}
           onChangePage={this.handleChangePage}
+          onChangeRowsPerPage={this.handleChangeRowsPerPage}
         />
       </>
     );
   }
 }
+TraineeList.contextType = MyContext;
 TraineeList.propTypes = {
   classes: PropTypes.objectOf(PropTypes.string).isRequired,
 };

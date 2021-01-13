@@ -1,155 +1,271 @@
-import React, { useState } from 'react';
-import { bool, func } from 'prop-types';
+import React, { Component } from 'react';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
+import PersonIcon from '@material-ui/icons/Person';
+import EmailIcon from '@material-ui/icons/Email';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import {
-  Dialog, DialogActions, Grid, TextField, DialogContent,
-  DialogContentText, DialogTitle, InputAdornment,
-} from '@material-ui/core';
-
-import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
-
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-
-import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
-
+import DialogActions from '@material-ui/core/DialogActions';
+import { withStyles } from '@material-ui/core/styles';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import PropTypes from 'prop-types';
+import DialogContent from '@material-ui/core/DialogContent';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import * as yup from 'yup';
 import { MyContext } from '../../../../contexts';
+import callApi from '../../../../libs/utils/api';
 
-const AddDialog = (props) => {
-  const { open, onClose, onSubmit } = props;
-  const [state, setState] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
-  const [touched, setTouched] = useState({
-    name: false,
-    email: false,
-    password: false,
-    confirmPassword: false,
-  });
-  const handleChange = (field) => (event) => {
-    setState({ ...state, [field]: event.target.value });
-  };
-  const handleBlur = (field) => {
-    setTouched({ ...touched, [field]: true });
-  };
-  const schema = yup.object().shape({
-    name: yup.string().required('Name is a required field').min(3, 'Min 3 characters'),
-    email: yup.string().email('Enter valid email')
-      .required('Email is a required field'),
-    password: yup.string()
-      .required('Password is a required field')
-      .matches(
-        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/g,
-        'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character',
-      ),
-    confirmPassword: yup.string()
-      .oneOf([yup.ref('password'), null], 'Passwords must match')
-      .required('Confirm Password is a required field'),
-  });
-  const hasErrors = () => {
-    try {
-      schema.validateSync(state);
-    } catch (err) {
-      return true;
+const schema = yup.object().shape({
+  name: yup.string().required('Name is required field'),
+  email: yup.string().required('Email Address is required field').matches(/^[A-Za-z.0-9]{3,}@[A-Za-z]{10,10}[.]{1,1}[A-Za-z]{4,4}$/, 'Email Address must be valid field'),
+  password: yup.string().min(3, 'Please enter min. 3 character').required('Password is required field'),
+  confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match').required('Confirm password is required field'),
+});
+
+const useStyles = () => ({
+  root: {
+    flexGrow: 1,
+  },
+  input: {
+    paddingRight: 5,
+  },
+});
+
+class AddDialog extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      isOpen: false,
+      loading: false,
+      error: {
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      },
+      hasError: false,
+      touched: {
+        name: false,
+        email: false,
+        password: false,
+        confirmPassword: false,
+      },
+    };
+  }
+
+  onClickHandler = async (data, openSnackBar) => {
+    this.setState({
+      loading: true,
+      hasError: true,
+    });
+    await callApi(data, 'post', '/trainee');
+    this.setState({ loading: false });
+    const Token = localStorage.getItem('token');
+    if (Token !== 'undefined') {
+      this.setState({
+        hasError: false,
+        message: 'This is a successfully added trainee message',
+      }, () => {
+        const { message } = this.state;
+        openSnackBar(message, 'success');
+      });
+    } else {
+      this.setState({
+        hasError: false,
+        message: 'error in submitting',
+      }, () => {
+        const { message } = this.state;
+        openSnackBar(message, 'error');
+      });
     }
-    return false;
+  }
+
+  handleBlur = (field) => {
+    const { touched } = this.state;
+    touched[field] = true;
+    this.setState({ touched }, () => this.handleValidate());
+  }
+
+  handleChange = (prop) => (event) => {
+    this.setState({ [prop]: event.target.value });
   };
-  const isTouched = () => {
+
+  hasErrors = () => {
+    const { hasError } = this.state;
+    schema.isValid(this.state)
+      .then((valid) => {
+        if (!valid !== hasError) {
+          this.setState({ hasError: !valid });
+        }
+      });
+  }
+
+  isTouched = (field) => {
+    const { touched } = this.state;
+    this.setState({
+      touched: {
+        ...touched,
+        [field]: true,
+      },
+    });
+  }
+
+  getError = (field) => {
+    const { error, touched } = this.state;
+    if (touched[field]) {
+      schema.validateAt(field, this.state).then(() => {
+        if (error[field] !== '') {
+          this.setState({
+            error: {
+              ...error,
+              [field]: '',
+            },
+          });
+        }
+      }).catch((err) => {
+        if (err.message !== error[field]) {
+          this.setState({
+            error: {
+              ...error,
+              [field]: err.message,
+            },
+          });
+        }
+      });
+    }
+    return error[field];
+  }
+
+  formReset = () => {
+    this.setState({
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      touched: {},
+    });
+  }
+
+  render() {
     const {
-      name, email, password, confirmPassword,
-    } = touched;
-    if (name || email || password || confirmPassword) {
-      return true;
-    }
-    return false;
-  };
-  const getError = (field) => {
-    if (touched[field] && hasErrors()) {
-      try {
-        schema.validateSyncAt(field, state);
-      } catch (err) {
-        return err.message;
-      }
-    }
-    return null;
-  };
-  const renderFormField = ({
-    label, type, icon, field,
-  }) => (
-    <TextField
-      error={!!getError(field)}
-      variant="outlined"
-      margin="dense"
-      label={label}
-      type={type}
-      fullWidth
-      helperText={getError(field)}
-      onChange={handleChange(field)}
-      onBlur={() => handleBlur(field)}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            {icon}
-          </InputAdornment>
-        ),
-      }}
-    />
-  );
-  return (
-    <div>
-      <Dialog open={open} fullWidth maxWidth="md" onClose={onClose}>
-        <DialogTitle id="form-dialog-title">Add Trainee</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Enter your Trainee details.
+      classes, open, onClose,
+    } = this.props;
+    const {
+      name, error, hasError, email, password, confirmPassword, loading,
+    } = this.state;
+    this.hasErrors();
+    return (
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle id="simple-dialog-title">Add Trainee</DialogTitle>
+        <DialogContent className={classes.root}>
+          <DialogContentText className={classes.Details}>
+            Enter your trainee details
           </DialogContentText>
-          <div>
-            <Grid container fullWidth>
-              <Grid item md={12} fullWidth>
-                {
-                  renderFormField({
-                    label: 'Name',
-                    field: 'name',
-                    type: 'text',
-                    icon: <PersonOutlineIcon />,
-                  })
-                }
-              </Grid>
-              <Grid item md={12} fullWidth>
-                {
-                  renderFormField({
-                    label: 'Email',
-                    field: 'email',
-                    type: 'Email',
-                    icon: <EmailOutlinedIcon />,
-                  })
-                }
-              </Grid>
-              <Grid item sm={6}>
-                {
-                  renderFormField({
-                    label: 'Password',
-                    field: 'password',
-                    type: 'password',
-                    icon: <VisibilityOffOutlinedIcon />,
-                  })
-                }
-              </Grid>
-              <Grid item sm={6}>
-                {
-                  renderFormField({
-                    label: 'Confirm Password',
-                    field: 'confirmPassword',
-                    type: 'password',
-                    icon: <VisibilityOffOutlinedIcon />,
-                  })
-                }
-              </Grid>
+          <TextField
+            label="Name *"
+            type="text"
+            autoComplete="off"
+            fullWidth
+            value={name}
+            error={error.name}
+            helperText={this.getError('name')}
+            onBlur={() => this.isTouched('name')}
+            onChange={this.handleChange('name')}
+            placeholder=""
+            margin="normal"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              startAdornment: (
+                <PersonIcon className={classes.input} />
+              ),
+            }}
+            variant="outlined"
+          />
+          <TextField
+            label="Email Address"
+            type="text"
+            autoComplete="off"
+            fullWidth
+            value={email}
+            error={error.email}
+            helperText={this.getError('email')}
+            onBlur={() => this.isTouched('email')}
+            onChange={this.handleChange('email')}
+            placeholder=""
+            margin="normal"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              startAdornment: (
+                <EmailIcon className={classes.input} />
+              ),
+            }}
+            variant="outlined"
+          />
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                label="Password"
+                type="password"
+                autoComplete="off"
+                fullWidth
+                value={password}
+                error={error.password}
+                helperText={this.getError('password')}
+                onBlur={() => this.isTouched('password')}
+                onChange={this.handleChange('password')}
+                placeholder=""
+                margin="normal"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <VisibilityOffIcon className={classes.input} />
+                  ),
+                }}
+                variant="outlined"
+              />
             </Grid>
-          </div>
+            <Grid item xs={6}>
+              <TextField
+                label="Confirm Password"
+                autoComplete="off"
+                fullWidth
+                type="password"
+                value={confirmPassword}
+                error={error.confirmPassword}
+                helperText={this.getError('confirmPassword')}
+                onBlur={() => this.isTouched('confirmPassword')}
+                onChange={this.handleChange('confirmPassword')}
+                placeholder=""
+                margin="normal"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <VisibilityOffIcon className={classes.input} />
+                  ),
+                }}
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} color="primary">
@@ -161,24 +277,31 @@ const AddDialog = (props) => {
                 color="primary"
                 variant="contained"
                 onClick={() => {
-                  onSubmit({});
-                  openSnackBar('This is a successfully added trainee message ! ', 'success');
+                  this.onClickHandler({
+                    name, email, password, confirmPassword,
+                  }, openSnackBar);
+                  this.formReset();
                 }}
-                disabled={(hasErrors()) || !isTouched()}
+                disabled={loading || hasError}
+                open={open}
+                onClose={onClose}
               >
-                Submit
+                {loading && (
+                  <CircularProgress size={15} />
+                )}
+                {loading && <span>Submitting</span>}
+                {!loading && <span>Submit</span>}
               </Button>
             )}
           </MyContext.Consumer>
         </DialogActions>
       </Dialog>
-    </div>
-  );
-};
-
+    );
+  }
+}
 AddDialog.propTypes = {
-  open: bool.isRequired,
-  onClose: func.isRequired,
-  onSubmit: func.isRequired,
+  classes: PropTypes.objectOf(PropTypes.string).isRequired,
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
-export default AddDialog;
+export default withStyles(useStyles)(AddDialog);
