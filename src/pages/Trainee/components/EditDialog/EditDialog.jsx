@@ -10,8 +10,10 @@ import { withStyles } from '@material-ui/core/styles';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import PropTypes from 'prop-types';
 import DialogContent from '@material-ui/core/DialogContent';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import * as yup from 'yup';
 import { MyContext } from '../../../../contexts';
+import callApi from '../../../../libs/utils/api';
 
 const schema = yup.object().shape({
   name: yup.string().required('Name is required field'),
@@ -101,11 +103,49 @@ class EditDialog extends Component {
     return error[field];
   }
 
+  onEditHandler = async (Data, openSnackBar) => {
+    const { onSubmit } = this.props;
+    this.setState({
+      loading: true,
+    });
+    const response = await callApi(Data, 'put', '/trainee');
+    this.setState({ loading: false });
+    if (response && response.status === 200) {
+      this.setState({
+        message: 'Trainee Updated Successfully',
+      }, () => {
+        const { message } = this.state;
+        onSubmit(Data);
+        openSnackBar(message, 'success');
+      });
+    } else {
+      this.setState({
+        message: 'Error while submitting',
+      }, () => {
+        const { message } = this.state;
+        openSnackBar(message, 'error');
+      });
+    }
+  }
+
+  formReset = () => {
+    this.setState({
+      name: '',
+      email: '',
+      touched: {},
+    });
+  }
+
   render() {
     const {
-      classes, open, onClose, onSubmit, data,
+      classes, open, onClose, data,
     } = this.props;
-    const { hasError, error } = this.state;
+    const {
+      error, name, email, loading,
+    } = this.state;
+    const { originalId: id } = data;
+
+    // const { error } = this.state;
     this.hasErrors();
     return (
       <Dialog
@@ -172,14 +212,18 @@ class EditDialog extends Component {
             {({ openSnackBar }) => (
               <Button
                 onClick={() => {
-                  onSubmit({ data });
-                  openSnackBar('This is a successfully updated message ! ', 'success');
+                  this.onEditHandler({ name, email, id }, openSnackBar);
+                  this.formReset();
                 }}
-                disabled={hasError}
+                disabled={this.hasErrors()}
                 color="primary"
                 variant="contained"
               >
-                Submit
+                {loading && (
+                  <CircularProgress size={15} />
+                )}
+                {loading && <span>Submitting</span>}
+                {!loading && <span>Submit</span>}
               </Button>
             )}
           </MyContext.Consumer>
