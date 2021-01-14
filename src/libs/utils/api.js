@@ -14,9 +14,6 @@ const callApi = async (data, method, url) => {
       },
     });
     console.log('api console', response);
-    // localStorage.setItem('token', response.data.data.generated_token);
-    // const token = localStorage.getItem('token');
-    // console.log('Token:::::', token);
     return response;
   } catch (error) {
     console.log('Inside catch', error);
