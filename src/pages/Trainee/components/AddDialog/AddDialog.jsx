@@ -154,7 +154,7 @@ class AddDialog extends Component {
 
   render() {
     const {
-      classes, open, onClose,
+      classes, open, onClose, pageRefresh,
     } = this.props;
     const {
       name, error, hasError, email, password, confirmPassword, loading,
@@ -164,6 +164,7 @@ class AddDialog extends Component {
       <Dialog
         open={open}
         onClose={onClose}
+        pageRefresh={pageRefresh}
         fullWidth
         maxWidth="md"
       >
@@ -303,5 +304,7 @@ AddDialog.propTypes = {
   classes: PropTypes.objectOf(PropTypes.string).isRequired,
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  pageRefresh: PropTypes.func.isRequired,
 };
+
 export default withStyles(useStyles)(AddDialog);

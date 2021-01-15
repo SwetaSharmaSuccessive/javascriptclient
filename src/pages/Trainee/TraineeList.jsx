@@ -47,19 +47,20 @@ class TraineeList extends Component {
   }
 
   handleUser = (status, data) => {
-    this.setState({ Open: status }, () => { console.log(data); });
+    this.setState({ Open: status }, () => { console.log(data); this.componentDidMount(); });
   };
 
   handleClose = () => {
     this.setState({ Open: false });
+    this.componentDidMount();
   }
 
   handleEditButton = (data) => {
-    this.setState({ EditOpen: false }, () => { console.log('Edited Item ', data.data); });
+    this.setState({ EditOpen: false }, () => { console.log('Edited Item ', data.data); this.componentDidMount(); });
   }
 
   handleDeleteButton = (data) => {
-    this.setState({ DeleteOpen: false }, () => { console.log('Deleted Item ', data.data); });
+    this.setState({ DeleteOpen: false }, () => { console.log('Deleted Item ', data.data); this.componentDidMount(); });
   };
 
   handleSelect = (event, data) => {
@@ -93,20 +94,24 @@ class TraineeList extends Component {
     this.setState({ loading: true });
     const value = this.context;
     callApi({}, 'get', `/trainee?skip=${skip}&limit=${limit}`).then((response) => {
-      trainee = response.data.data;
-      this.setState({ dataObj: response.data });
-      if (response.data === undefined) {
-        this.setState({
-          loading: false,
-          message: 'This is an error while displaying Trainee',
-        }, () => {
-          const { message } = this.state;
-          value.openSnackBar(message, 'error');
-        });
-      } else {
-        const { records } = response.data;
-        this.setState({ dataObj: records, loading: false, Count: 100 });
-        return response;
+      try {
+        trainee = response.data.data;
+        this.setState({ dataObj: response.data });
+        if (response.data === undefined) {
+          this.setState({
+            loading: false,
+            message: 'This is an error while displaying Trainee',
+          }, () => {
+            const { message } = this.state;
+            value.openSnackBar(message, 'error');
+          });
+        } else {
+          const { records } = response.data;
+          this.setState({ dataObj: records, loading: false, Count: 100 });
+          return response;
+        }
+      } catch (err) {
+        console.log(err);
       }
     });
   }

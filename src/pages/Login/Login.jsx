@@ -9,7 +9,6 @@ import { Redirect } from 'react-router-dom';
 import { Email, VisibilityOff, LockOutlined } from '@material-ui/icons';
 import * as yup from 'yup';
 import CircularProgress from '@material-ui/core/CircularProgress';
-// import ls from 'local-storage';
 import callApi from '../../libs/utils/api';
 import { MyContext } from '../../contexts/index';
 
@@ -76,29 +75,37 @@ class Login extends React.Component {
       loading: true,
       hasErrors: true,
     });
-    const response= await callApi(data, 'post', '/user/login');
-    console.log('login data', data);
-    console.log('ResponseToken', response);
-    localStorage.setItem('token', response.data.data.generated_token);
-    this.setState({ loading: false });
-    const Token = localStorage.getItem('token');
-    if (Token !== 'undefined') {
-      this.setState({
-        redirect: true,
-        hasError: false,
-        message: 'Successfully Login!',
-      }, () => {
+    try {
+      const response = await callApi(data, 'post', '/user/login');
+      if (response.data) {
+        localStorage.setItem('token', response.data.data.generated_token);
+      }
+
+      this.setState({ loading: false });
+      const Token = localStorage.getItem('token');
+
+      if (Token !== null) {
+        this.setState({
+          redirect: true,
+          hasError: false,
+          message: 'Successfully Login!',
+        });
         const { message } = this.state;
         openSnackBar(message, 'success');
-      });
-    } else {
-      this.setState({
-        message: 'Login Failed, Record Not Found',
-      }, () => {
-        const { message } = this.state;
-        openSnackBar(message, 'error');
-      });
+      } else {
+        this.setState({
+          message: 'Login Failed, Record Not Found',
+        }, () => {
+          const { message } = this.state;
+          openSnackBar(message, 'error');
+        });
+      }
+    } catch (err) {
+      console.log(err);
     }
+    this.setState({
+      loading: false,
+    });
   }
 
   getError = (field) => {
