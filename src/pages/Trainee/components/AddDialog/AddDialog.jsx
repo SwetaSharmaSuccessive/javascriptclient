@@ -64,6 +64,7 @@ class AddDialog extends Component {
       loading: true,
       hasError: true,
     });
+    const { onClose } = this.props;
     await callApi(data, 'post', '/trainee');
     this.setState({ loading: false });
     const Token = localStorage.getItem('token');
@@ -75,6 +76,7 @@ class AddDialog extends Component {
         const { message } = this.state;
         openSnackBar(message, 'success');
       });
+      onClose();
     } else {
       this.setState({
         hasError: false,
@@ -84,6 +86,7 @@ class AddDialog extends Component {
         openSnackBar(message, 'error');
       });
     }
+    onClose();
   }
 
   handleBlur = (field) => {
