@@ -1,1 +1,1 @@
-export { default as withLoaderAndMsg } from './withLoderAndMessage';
+export { default as withLoaderAndMessage } from './withLoderAndMessage';

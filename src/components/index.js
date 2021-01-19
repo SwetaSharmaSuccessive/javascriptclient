@@ -4,4 +4,4 @@ export { RadioGroup } from './RadioGroup';
 export { SelectField } from './SelectField';
 export { ButtonField } from './Button';
 export { TableComponent } from './Table';
-export { withLoaderAndMsg } from './HOC';
+export { withLoaderAndMessage } from './HOC';

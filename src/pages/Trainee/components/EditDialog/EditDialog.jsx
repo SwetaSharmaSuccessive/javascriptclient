@@ -145,7 +145,6 @@ class EditDialog extends Component {
     } = this.state;
     const { originalId: id } = data;
 
-    // const { error } = this.state;
     this.hasErrors();
     return (
       <Dialog

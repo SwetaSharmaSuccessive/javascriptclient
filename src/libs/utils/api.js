@@ -1,10 +1,10 @@
-/* eslint-disable consistent-return */
 import axios from 'axios';
 
 const callApi = async (data, method, url) => {
   try {
     const baseUrl = 'http://localhost:9000/api';
     const response = await axios({
+
       method,
       url: baseUrl + url,
       data,
@@ -14,7 +14,7 @@ const callApi = async (data, method, url) => {
     });
     return response;
   } catch (error) {
-    return { status: 'error', message: 'This is a error message' };
+    return { status: 'error', message: 'This is an Error Message' };
   }
 };
 export default callApi;

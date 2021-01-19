@@ -90,11 +90,11 @@ class TraineeList extends Component {
   };
 
   componentDidMount = () => {
-    const { skip, limit } = this.state;
+    const { limit, skip } = this.state;
     this.setState({ loading: true });
     const value = this.context;
-    callApi({}, 'get', `/trainee?skip=${skip}&limit=${limit}`).then((response) => {
-      try {
+    callApi({}, 'get', `/trainee?skip=${skip}&limit=${limit}`)
+      .then((response) => {
         trainee = response.data.data;
         this.setState({ dataObj: response.data });
         if (response.data === undefined) {
@@ -107,20 +107,22 @@ class TraineeList extends Component {
           });
         } else {
           const { records } = response.data;
-          this.setState({ dataObj: records, loading: false, Count: 100 });
+          this.setState({
+            dataObj: records,
+            loading: false,
+            Count: 100,
+          });
           return response;
         }
-      } catch (err) {
+      }).catch((err) => {
         console.log(err);
-      }
-    });
+      });
   }
 
   handleChangeRowsPerPage = (event) => {
     this.setState({
-      rowsPerPage: event.target.value,
+      count: event.target.value,
       page: 0,
-
     });
   };
 
