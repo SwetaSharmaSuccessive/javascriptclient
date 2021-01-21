@@ -59,8 +59,12 @@ class TraineeList extends Component {
     this.setState({ EditOpen: false }, () => { console.log('Edited Item ', data.data); this.componentDidMount(); });
   }
 
-  handleDeleteButton = (data) => {
-    this.setState({ DeleteOpen: false }, () => { console.log('Deleted Item ', data.data); this.componentDidMount(); });
+  handleDeleteButton = () => {
+    this.setState({ DeleteOpen: false }, () => { console.log('Deleted Item '); this.componentDidMount(); });
+    const { page } = this.state;
+    if (page > 0) {
+      this.setState({ page: page - 1 });
+    }
   };
 
   handleSelect = (event, data) => {
@@ -110,7 +114,7 @@ class TraineeList extends Component {
           this.setState({
             dataObj: records,
             loading: false,
-            Count: 100,
+            Count: response.data.TotalCount,
           });
           return response;
         }

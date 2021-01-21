@@ -25,37 +25,37 @@ class DeleteDialog extends Component {
     this.setState({ open: false });
   };
 
-  onDeleteHandler = async (data, openSnackBar) => {
-    this.setState({
-      loading: true,
-    });
-    const { onSubmit } = this.props;
-    const { originalId } = data.data;
-    const response = await callApi({}, 'delete', `/trainee/${originalId}`);
-    this.setState({ loading: false });
-    if (response && response.status === 200) {
-      this.setState({
-        message: 'Trainee Deleted Successfully ',
-      }, () => {
-        const { message } = this.state;
-        onSubmit(data);
-        openSnackBar(message, 'success');
-      });
-    } else {
-      this.setState({
-        message: 'Error While Deleting Trainee',
-      }, () => {
-        const { message } = this.state;
-        openSnackBar(message, 'error');
-      });
-    }
-  }
-
   render() {
     const {
       open, onClose, data,
     } = this.props;
     const { loading } = this.state;
+    const onDeleteHandler = async (openSnackBar) => {
+      this.setState({
+        loading: true,
+      });
+      const { onSubmit } = this.props;
+      const { originalId } = data;
+      const response = await callApi({}, 'delete', `/trainee/${originalId}`);
+      this.setState({ loading: false });
+      if (response && response.status === 200) {
+        this.setState({
+          message: 'Trainee Deleted Successfully ',
+        }, () => {
+          const { message } = this.state;
+          onSubmit(data);
+          openSnackBar(message, 'success');
+          onClose();
+        });
+      } else {
+        this.setState({
+          message: 'Error While Deleting Trainee',
+        }, () => {
+          const { message } = this.state;
+          openSnackBar(message, 'error');
+        });
+      }
+    };
 
     return (
       <Dialog
@@ -77,7 +77,7 @@ class DeleteDialog extends Component {
                   color="primary"
                   variant="contained"
                   onClick={() => {
-                    this.onDeleteHandler({ data }, openSnackBar);
+                    onDeleteHandler(openSnackBar);
                   }}
                 >
                   {loading && (
