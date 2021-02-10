@@ -9,7 +9,7 @@ import { Redirect } from 'react-router-dom';
 import { Email, VisibilityOff, LockOutlined } from '@material-ui/icons';
 import * as yup from 'yup';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import callApi from '../../libs/utils/api';
+// import callApi from '../../libs/utils/api';
 import { MyContext } from '../../contexts/index';
 
 const LoginStyle = (theme) => ({
@@ -71,41 +71,100 @@ class Login extends React.Component {
   }
 
   onClickHandler = async (data, openSnackBar) => {
+    const { loginUser } = this.props;
+    const { email, password } = data;
+    console.log('-------login user---', this.props);
+    console.log('-----data---', data);
     this.setState({
       loading: true,
       hasErrors: true,
     });
-    try {
-      const response = await callApi(data, 'post', '/user/login');
-      if (response.data) {
-        localStorage.setItem('token', response.data.data.generated_token);
-      }
 
-      this.setState({ loading: false });
-      const Token = localStorage.getItem('token');
 
-      if (Token !== null) {
-        this.setState({
+    await loginUser({ variables: { email, password }})
+    .then((response)=>{
+      console.log('response.data is', response.data.loginUser);
+    this.setState({ loading: false });
+    localStorage.setItem('token', response.data.loginUser);
+          this.setState({
           redirect: true,
           hasError: false,
           message: 'Successfully Login!',
         });
         const { message } = this.state;
         openSnackBar(message, 'success');
-      } else {
-        this.setState({
-          message: 'Login Failed, Record Not Found',
-        }, () => {
-          const { message } = this.state;
-          openSnackBar(message, 'error');
-        });
-      }
-    } catch (err) {
-      console.log(err);
-    }
-    this.setState({
-      loading: false,
-    });
+    })
+    .catch((e) => {
+      console.log('error', e);
+      this.setState({
+        loading: false,
+      });
+      this.setState({
+        message: 'Login Failed, Record Not Found',
+      }, () => {
+        const { message } = this.state;
+        openSnackBar(message, 'error');
+      });
+      console.log('something went wrong');
+    })
+    console.log('something went wrong');
+
+    // console.log('response.data is', response.data.loginUser);
+    // this.setState({ loading: false });
+    // localStorage.setItem('token', response.data.loginUser);
+    //       this.setState({
+    //       redirect: true,
+    //       hasError: false,
+    //       message: 'Successfully Login!',
+    //     });
+    //     const { message } = this.state;
+    //     openSnackBar(message, 'success');
+
+
+
+//     try {
+//       const response = await loginUser({ variables: { email, password }});
+
+//       console.log('response.data is', response.data.loginUser);
+//       if (response.data) {
+//         localStorage.setItem('token', response.data.loginUser);
+//       }
+
+//       this.setState({ loading: false });
+//       const Token = localStorage.getItem('token');
+// console.log('jijiji--', Token);
+//       if (Token !== null) {
+//         this.setState({
+//           redirect: true,
+//           hasError: false,
+//           message: 'Successfully Login!',
+//         });
+//         const { message } = this.state;
+//         openSnackBar(message, 'success');
+//       } else {
+//         this.setState({ loading: false });
+//         console.log('something went wrong');
+//         this.setState({
+//           message: 'Login Failed, Record Not Found',
+//         }, () => {
+//           const { message } = this.state;
+//           openSnackBar(message, 'error');
+//         });
+//       }
+//     } catch (err) {
+//       console.log('error', err);
+//       console.log('something went wrong');
+//       this.setState({
+//         loading: false,
+//       });
+//       this.setState({
+//         message: 'Login Failed, Record Not Found',
+//       }, () => {
+//         const { message } = this.state;
+//         openSnackBar(message, 'error');
+//       });
+//     }
+
   }
 
   getError = (field) => {
